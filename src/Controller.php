@@ -40,10 +40,6 @@ class Controller
     {
         [$body, $type] = App::imap(@$_GET['account'])->body(@$_GET['id']);
 
-        if(!$type) {
-            return Response::json(null);
-        }
-
         if ($type === 'plain') {
             return Response::plain($body);
         }
@@ -52,10 +48,10 @@ class Controller
             return Response::html($body);
         }
 
-        throw new RuntimeException('unknown body type: ' . json_encode($type));
+        return Response::json(null);
     }
 
-    public function playground(): mixed
+    public function playground(): never
     {
         dd(App::env()->accounts());
     }
