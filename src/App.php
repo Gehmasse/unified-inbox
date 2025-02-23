@@ -29,11 +29,32 @@ class App
 
     public static function router(): Router
     {
-        return new Router($_GET['page'] ?? '');
+        return new Router($_REQUEST['page'] ?? '');
     }
 
-    public function response(): string
+    public static function response(): string
     {
         return self::router()->response();
+    }
+
+    public static function db(): DB
+    {
+        return new DB();
+    }
+
+    public static function run(): string
+    {
+        if(!self::auth()->verifyToken(@$_REQUEST['token'] ?? '')) {
+            http_response_code(401);
+
+            return 'Unauthorized';
+        }
+
+        return self::response();
+    }
+
+    public static function auth(): Auth
+    {
+        return new Auth();
     }
 }

@@ -23,7 +23,7 @@ class Controller
         $mails = [];
 
         foreach (App::env()->accounts() as $account) {
-            $mails = [...$mails, ...new IMAP($account)->mails(limit: $_GET['limit'] ?? 20)];
+            $mails = [...$mails, ...new IMAP($account)->mails(limit: $_REQUEST['limit'] ?? 20)];
         }
 
         usort($mails, fn(Mail $a, Mail $b) => $a->seen() <=> $b->seen() ?: $b->date() <=> $a->date());
@@ -33,12 +33,12 @@ class Controller
 
     public function mail(): string
     {
-        return Response::json(App::imap(@$_GET['account'])->mail(@$_GET['id'])?->toArray());
+        return Response::json(App::imap(@$_REQUEST['account'])->mail(@$_REQUEST['id'])?->toArray());
     }
 
     public function body(): string
     {
-        [$body, $type] = App::imap(@$_GET['account'])->body(@$_GET['id']);
+        [$body, $type] = App::imap(@$_REQUEST['account'])->body(@$_REQUEST['id']);
 
         if ($type === 'plain') {
             return Response::plain($body);
@@ -53,7 +53,23 @@ class Controller
 
     public function playground(): never
     {
-        dd(App::env()->accounts());
+        dd();
+    }
+
+    public function register(): string
+    {
+        if (!App::auth()->verifyPassword()) {
+            return Response::json(['status' => false]);
+        }
+
+        return Response::json(['status' => true, 'token' => App::auth()->register()]);
+    }
+
+    public function login(): string
+    {
+        $status = isset($_REQUEST['token']) && App::auth()->verifyToken($_REQUEST['token']);
+
+        return Response::json(['status' => $status]);
     }
 
 }

@@ -19,6 +19,8 @@ readonly class Router
             'mail' => $controller->mail(),
             'body' => $controller->body(),
             'playground' => $controller->playground(),
+            'register' => $controller->register(),
+            'login' => $controller->login(),
             default => 'Not Found: "' . $this->page . '"',
         };
     }

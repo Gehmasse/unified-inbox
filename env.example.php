@@ -11,4 +11,5 @@ return [
             'password' => '***',
         ],
     ],
+    'password_hash' => '***',
 ];

@@ -19,6 +19,7 @@
   "require": {
     "php": "^8.4",
     "ext-imap": "*",
-    "ext-mbstring": "*"
+    "ext-mbstring": "*",
+    "ext-pdo": "*"
   }
 }

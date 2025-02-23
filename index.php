@@ -8,4 +8,4 @@ use Micro\UnifiedInbox\App;
 
 require __DIR__ . '/vendor/autoload.php';
 
-echo new App()->response();
+echo App::run();
