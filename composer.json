@@ -1,0 +1,24 @@
+{
+  "name": "micro/unified-inbox",
+  "description": "Unified IMAP-Inbox",
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "Micro\\UnifiedInbox\\": "src/"
+    },
+    "files": [
+      "src/functions.php"
+    ]
+  },
+  "authors": [
+    {
+      "name": "Leo",
+      "email": "leo@gehmasse.de"
+    }
+  ],
+  "require": {
+    "php": "^8.4",
+    "ext-imap": "*",
+    "ext-mbstring": "*"
+  }
+}
