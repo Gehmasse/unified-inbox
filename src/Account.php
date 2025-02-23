@@ -5,6 +5,7 @@ namespace Micro\UnifiedInbox;
 readonly class Account
 {
     public function __construct(
+        public string $key,
         public string $title,
         public string $host,
         public string $username,

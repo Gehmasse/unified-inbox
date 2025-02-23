@@ -4,7 +4,7 @@ namespace Micro\UnifiedInbox;
 
 readonly class Mail
 {
-    public function __construct(private int $id, private object $header)
+    public function __construct(private int $id, private object $header, private Account $account)
     {
     }
 
@@ -19,28 +19,22 @@ readonly class Mail
             return '---';
         }
 
-        $decoded = '';
-
-        foreach (imap_mime_header_decode($this->header->subject) as $part) {
-            $decoded .= mb_convert_encoding($part->text, 'UTF-8', $part->charset === 'default' ? 'US-ASCII' : $part->charset);
-        }
-
-        return $decoded;
+        return Parser::headerDecode($this->header->subject);
     }
 
-    public function from(): string
+    public function from(): People
     {
-        return $this->header->from[0]->mailbox . '@' . $this->header->from[0]->host;
+        return new People($this->header->from);
     }
 
-    public function to(): string
+    public function to(): People
     {
-        return $this->header->to[0]->mailbox . '@' . $this->header->to[0]->host;
+        return new People($this->header->to);
     }
 
     public function date(): string
     {
-        return $this->header->date;
+        return date('Y-m-d H:i:s', strtotime($this->header->date));
     }
 
     // TODO: from_long, to_long
@@ -50,13 +44,14 @@ readonly class Mail
         return [
             'id' => $this->id(),
             'subject' => $this->subject(),
-            'from' => $this->from(),
-            'to' => $this->to(),
+            'from' => $this->from()->toArray(),
+            'to' => $this->to()->toArray(),
             'date' => $this->date(),
             'links' => [
                 'mail' => '/?page=mail&id=' . $this->id(),
                 'body' => '/?page=body&id=' . $this->id(),
             ],
+            'account' => $this->account->key,
         ];
     }
 }

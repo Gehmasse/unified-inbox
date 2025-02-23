@@ -11,15 +11,15 @@ class App
         return new Env(require __DIR__ . '/../env.php');
     }
 
-    public static function imap(): IMAP
+    public static function imap(?string $account): IMAP
     {
-        $accounts = self::env()->accounts();
+        $account = self::env()->accounts()[$account] ?? null;
 
-        if(count($accounts) > 0) {
-            return new IMAP($accounts[0]);
+        if (!$account) {
+            throw new RuntimeException('Unknown account "' . $account . '"');
         }
 
-        throw new RuntimeException('No accounts found');
+        return new IMAP($account);
     }
 
     public static function controller(): Controller

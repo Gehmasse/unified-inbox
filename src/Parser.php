@@ -74,4 +74,21 @@ class Parser
             strtolower($structure->subtype),
         ];
     }
+
+    public static function headerDecode(string $string): string
+    {
+        $decoded = '';
+
+        foreach (imap_mime_header_decode($string) as $part) {
+            $decoded .= mb_convert_encoding(
+                $part->text,
+                'UTF-8',
+                $part->charset === 'default'
+                    ? 'US-ASCII'
+                    : $part->charset,
+            );
+        }
+
+        return $decoded;
+    }
 }

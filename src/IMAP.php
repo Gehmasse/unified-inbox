@@ -4,13 +4,14 @@ namespace Micro\UnifiedInbox;
 
 use IMAP\Connection;
 use RuntimeException;
+use Throwable;
 
 class IMAP
 {
     private Connection $connection;
 
     public function __construct(
-        private readonly Account $auth,
+        private readonly Account $account,
     )
     {
         $this->connect();
@@ -18,7 +19,7 @@ class IMAP
 
     private function connect(): void
     {
-        $connection = imap_open($this->mailbox(), $this->auth->username, $this->auth->password);
+        $connection = imap_open($this->mailbox(), $this->account->username, $this->account->password);
 
         if (!($connection instanceof Connection)) {
             throw new RuntimeException("IMAP Connection failed: " . imap_last_error());
@@ -29,32 +30,33 @@ class IMAP
 
     private function protocol(): string
     {
-        return $this->auth->ssl ? '/imap/ssl' : '/imap';
+        return $this->account->ssl ? '/imap/ssl' : '/imap';
     }
 
     private function mailbox(string $folder = 'INBOX'): string
     {
-        return '{' . $this->auth->host . ':' . $this->auth->port . $this->protocol() . '}' . $folder;
+        return '{' . $this->account->host . ':' . $this->account->port . $this->protocol() . '}' . $folder;
     }
 
-
-    public function folders(string $folder = ""): array
+    public function folders(string $folder = '', string $prefix = ''): array
     {
         $mailbox = $this->mailbox($folder);
 
-        $folders = imap_list($this->connection, $mailbox, "*");
+        $folders = imap_list($this->connection, $mailbox, '*');
 
         if (!$folders) {
             return [];
         }
 
-        return array_map(fn(string $folder) => str_replace($mailbox, '', $folder), $folders);
+        return array_map(function (string $folder) use ($mailbox, $prefix) {
+            $name = str_replace($mailbox, '', $folder);
+
+            return $prefix ? $prefix . '/' . $name : $name;
+        }, $folders);
     }
 
-    public function mails(string $folder = "INBOX", int $limit = 10): array
+    public function mails(int $limit = 10): array
     {
-        $mailbox = $this->mailbox($folder);
-
         $emails = imap_search($this->connection, 'ALL');
 
         if (!$emails) {
@@ -69,7 +71,7 @@ class IMAP
         foreach ($emails as $email) {
             $header = imap_headerinfo($this->connection, $email);
 
-            $messages[] = new Mail(id: $email, header: $header);
+            $messages[] = new Mail(id: $email, header: $header, account: $this->account);
         }
 
         return $messages;
@@ -82,7 +84,7 @@ class IMAP
 
     public function body(int $id): array
     {
-        $structure = imap_fetchstructure($this->connection, $id);
+        $structure = @imap_fetchstructure($this->connection, $id);
 
         if (!$structure) {
             return [false, false];
@@ -113,10 +115,14 @@ class IMAP
         return [$result, $type];
     }
 
-    public function mail(int $id): array
+    public function mail(int $id): ?Mail
     {
-        $header = imap_headerinfo($this->connection, $id);
+        $header = @imap_headerinfo($this->connection, $id);
 
-        return new Mail(id: $id, header: $header)->toArray();
+        if (!$header) {
+            return null;
+        }
+
+        return new Mail(id: $id, header: $header, account: $this->account);
     }
 }
