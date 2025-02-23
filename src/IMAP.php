@@ -10,7 +10,7 @@ class IMAP
     private Connection $connection;
 
     public function __construct(
-        private readonly LoginData $auth,
+        private readonly Account $auth,
     )
     {
         $this->connect();

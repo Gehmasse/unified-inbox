@@ -2,6 +2,8 @@
 
 namespace Micro\UnifiedInbox;
 
+use RuntimeException;
+
 class App
 {
     public static function env(): Env
@@ -11,13 +13,13 @@ class App
 
     public static function imap(): IMAP
     {
-        $login = new LoginData(
-            host: self::env()->host(),
-            username: self::env()->username(),
-            password: self::env()->password(),
-        );
+        $accounts = self::env()->accounts();
 
-        return new IMAP($login);
+        if(count($accounts) > 0) {
+            return new IMAP($accounts[0]);
+        }
+
+        throw new RuntimeException('No accounts found');
     }
 
     public static function controller(): Controller

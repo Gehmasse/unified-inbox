@@ -2,13 +2,13 @@
 
 namespace Micro\UnifiedInbox;
 
-readonly class LoginData
+readonly class Account
 {
     public function __construct(
+        public string $title,
         public string $host,
         public string $username,
         public string $password,
-        public string $folder = "INBOX",
         public int    $port = 993,
         public bool   $ssl = true,
     )
