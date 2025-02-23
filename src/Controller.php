@@ -26,7 +26,7 @@ class Controller
             $mails = [...$mails, ...new IMAP($account)->mails(limit: $_GET['limit'] ?? 20)];
         }
 
-        usort($mails, fn(Mail $a, Mail $b) => $b->date() <=> $a->date());
+        usort($mails, fn(Mail $a, Mail $b) => $a->seen() <=> $b->seen() ?: $b->date() <=> $a->date());
 
         return Response::json(array_map(fn(Mail $mail) => $mail->toArray(), $mails));
     }

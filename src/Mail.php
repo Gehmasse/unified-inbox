@@ -37,7 +37,10 @@ readonly class Mail
         return date('Y-m-d H:i:s', strtotime($this->header->date));
     }
 
-    // TODO: from_long, to_long
+    public function seen(): bool
+    {
+        return $this->header->Unseen !== 'U';
+    }
 
     public function toArray(): array
     {
@@ -52,6 +55,8 @@ readonly class Mail
                 'body' => '/?page=body&id=' . $this->id(),
             ],
             'account' => $this->account->key,
+            'seen' => $this->seen(),
         ];
     }
+
 }

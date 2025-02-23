@@ -33,12 +33,24 @@ readonly class Person
         return $name . ' <' . $this->address() . '>';
     }
 
+    public function short(): string
+    {
+        $name = $this->name();
+
+        if ($name === '---') {
+            return $this->address();
+        }
+
+        return $name;
+    }
+
     public function toArray(): array
     {
         return [
             'address' => $this->address(),
             'name' => $this->name(),
             'long' => $this->long(),
+            'short' => $this->short(),
         ];
     }
 }
