@@ -5,7 +5,7 @@ namespace Micro\UnifiedInbox;
 class Auth
 {
 
-    public function register(): string
+    public function login(): string
     {
         $token = $this->generateToken();
 

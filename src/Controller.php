@@ -56,20 +56,13 @@ class Controller
         dd();
     }
 
-    public function register(): string
+    public function login(): string
     {
         if (!App::auth()->verifyPassword()) {
             return Response::json(['status' => false]);
         }
 
-        return Response::json(['status' => true, 'token' => App::auth()->register()]);
-    }
-
-    public function login(): string
-    {
-        $status = isset($_REQUEST['token']) && App::auth()->verifyToken($_REQUEST['token']);
-
-        return Response::json(['status' => $status]);
+        return Response::json(['status' => true, 'token' => App::auth()->login()]);
     }
 
 }

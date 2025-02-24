@@ -44,7 +44,11 @@ class App
 
     public static function run(): string
     {
-        if(!self::auth()->verifyToken(@$_REQUEST['token'] ?? '')) {
+        if (isset($_REQUEST['password'])) {
+            return self::controller()->login();
+        }
+
+        if (!self::auth()->verifyToken(@$_REQUEST['token'] ?? '')) {
             http_response_code(401);
 
             return 'Unauthorized';
