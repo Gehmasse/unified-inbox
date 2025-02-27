@@ -48,7 +48,7 @@ class App
             return self::controller()->login();
         }
 
-        if (!self::auth()->verifyToken(@$_REQUEST['token'] ?? '')) {
+        if (!self::auth()->verifyToken()) {
             http_response_code(401);
 
             return 'Unauthorized';

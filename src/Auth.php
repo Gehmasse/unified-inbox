@@ -17,8 +17,10 @@ class Auth
         return $token;
     }
 
-    public function verifyToken(string $token): bool
+    public function verifyToken(): bool
     {
+        $token = @$_REQUEST['token'] ?? '';
+
         $record = App::db()->find('sessions', 'token', $token);
 
         return $record && @$record->expiry > time();
