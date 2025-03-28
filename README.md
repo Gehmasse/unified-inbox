@@ -1,7 +1,7 @@
 # Unified Inbox
 
 An API providing access to a unified inbox for multiple IMAP accounts.
-As a frontend, [mail-frontend](https://github.com/Gehmasse/mail-frontend/tree/unified-inbox) can be used at branch `unified-inbox`.
+As a frontend, [mail-frontend](https://github.com/leonickl/mail-frontend/tree/unified-inbox) can be used at branch `unified-inbox`.
 
 -   install PHP 8.4 and composer
 -   run `composer install`
